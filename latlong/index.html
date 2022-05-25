@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>위도경도 구하기</title>
+
+    <!-- CSS 정의 -->
+    <style>
+        /* 지도가 표시되는 body 요소의 마진 없애기 */
+        body {
+            margin: 0;
+            border: hidden;
+            overflow: hideen;
+        }
+
+        /* 정보창 스타일 */
+        div.infoWndStyle {
+            margin: 0px;
+            border: 1px solid #000000;
+            padding: 0px;
+            background-color: #ffffff;
+            width: 300px;
+            text-align: center;
+        }
+    </style>
+
+    <!-- 네이버 지도 API 불러오기 -->
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=pkwgov1t4i"></script>
+</head>
+
+<body>
+    <!-- vw: viewport width, vh: viewport height -->
+    <!-- 
+        div 태그를 viewport에 꽉차게 설정하면 굳이 JS로 같은 기능을 중복 구현할 필요가 없다.
+        또한, 모바일에서 (ex. iOS Safari) 상단바(하단바)가 사라졌을때에도 대응이 가능하다.
+    -->
+    <div id="map" style="width: 100vw; height: 100vh; border: hidden;"></div>
+
+    <script>
+        // 네이버 맵 생성
+        let mapOptions = {
+            center: {
+                lat: 37.3595704,
+                lng: 127.105399
+            },
+            zoom: 15,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: naver.maps.Position.TOP_RIGHT
+            },
+            mapTypeControl: true
+        }
+        let map = new naver.maps.Map("map", mapOptions);
+
+        // 마커 생성
+        let position = new naver.maps.LatLng(37.3595704, 127.105399);
+        let marker = new naver.maps.Marker({
+            position: position,
+            map: map
+        });
+
+        // 마커의 위치(위도, 경도)
+        let lat = 37.3595704;
+        let long = 127.105399;
+
+        // 마커 클릭 이벤트 리스너
+        naver.maps.Event.addListener(map, 'click', function (e) {
+            marker.setPosition(e.coord);
+            // alert(`위도: ${e.coord.lat()}, 경도 ${e.coord.lng()}`);
+            lat = e.coord.lat();
+            long = e.coord.lng();
+
+            // 정보창 생성
+            let infoWndContent =
+                `<div class="infoWndStyle">` +
+                `<p>위도: ${lat}, 경도: ${long}</p>` +
+                `</div>`;
+            let infoWnd = new naver.maps.InfoWindow({
+                content: infoWndContent,
+                backgroundColor: "#ffffff00",
+                borderWidth: 0,
+                // PC
+                pixelOffset: [0, -10],
+                disableAnchor: true
+            });
+            infoWnd.open(map, marker);
+        });
+    </script>
+</body>
+
+</html>
